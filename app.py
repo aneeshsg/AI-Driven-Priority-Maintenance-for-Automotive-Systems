@@ -2,8 +2,13 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 from supabase import create_client
-from pages import login, vehicle_form, predictions, llm_analysis,update
 import pandas as pd
+
+from components import login
+from components import vehicle_form
+from components import predictions
+from components import llm_analysis
+from components import update
 
 load_dotenv()
 
@@ -21,15 +26,16 @@ if 'current_page' not in st.session_state:
 
 st.set_page_config(
     page_title="Vehicle Predictive Analysis",
-    layout="centered",
+    layout="centered",  
 )
 
-st.markdown("""
+st.markdown(""" 
 <style>
     .stButton>button {
         color: black;
         background-color: #ffffff;
         border: none;
+        width: 100%;
         padding: 10px 20px;
         text-align: center;
         text-decoration: none;
@@ -60,7 +66,7 @@ st.markdown("""
         font-size: 28px;
         color: #2c3e50;
     }
-    
+
     /* Adjust table style for a consistent look */
     .css-1d391kg table {
         width: 100%;
@@ -78,11 +84,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
 def show_home_page():
     """Renders the home page with a welcome message, features, project description, and team table."""
-    
-    
+    st.markdown("<div class='content'>", unsafe_allow_html=True)
+    st.markdown("<h1 class='title'>Vehicle Predictive Analysis Platform</h1>", unsafe_allow_html=True)
     st.markdown("<p class='description'>Advanced analytics and insights for vehicle data management</p>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
@@ -109,6 +114,19 @@ def show_home_page():
         "reducing downtime, and ensuring safety. With advanced analytics and machine learning algorithms, we empower stakeholders "
         "to optimize vehicle performance and reliability."
     )
+
+    st.markdown("""
+    <h2 class='section-title'>How it Works</h2>
+    <p >Add all your vehicle data using the form. Regularly update your data to take full advantage of the predictive analysis and maintenance insights. The system will use machine learning models to predict the type of failure your vehicle may experience. Then, leveraging large language models (LLMs), it will provide detailed insights and suggestions for repair or maintenance.</p>
+    <p style='text-align:center; color:#7f8c8d;'>Here's how the system operates:</p>
+    <ol '>
+        <li><strong>Machine Prioritization:</strong> This stage prioritizes vehicles for maintenance using a retrieval-augmented generation (RAG) system that processes both structured and unstructured data, including maintenance costs and past failures.</li>
+        <li><strong>Failure Prediction:</strong> Vehicle sensor data is analyzed to predict failures using machine learning models, ensuring proactive maintenance.</li>
+        <li><strong>Repair Plan Generation:</strong> Based on the predicted failures, the system generates detailed work orders with instructions and resource allocation using large language models (LLMs).</li>
+        <li><strong>Maintenance Guidance:</strong> Generative AI integrates service notes and additional information into the repair plan, providing enhanced guidance to technicians during repairs.</li>
+    </ol>
+    <p s>By enhancing maintenance operations with AI, this platform offers substantial cost savings, improved efficiency, and heightened productivity, giving businesses a competitive edge.</p>
+    """, unsafe_allow_html=True)
     
     # Team Members Section
     st.markdown("<h2 class='section-title'>Our Team</h2>", unsafe_allow_html=True)
@@ -123,41 +141,32 @@ def show_home_page():
     st.markdown("</div>", unsafe_allow_html=True)
 
 
-def render_top_navigation():
-    """Renders top navigation based on authentication status."""
-    col2, col3, col4,col5,col6 = st.columns([1, 1, 1 ,1,1])
-    
-    if not st.session_state.authenticated:
-        with col2:
+def render_sidebar_navigation():
+    """Renders sidebar navigation based on authentication status."""
+    with st.sidebar:
+        if not st.session_state.authenticated:
             if st.button("Home"):
                 st.session_state.current_page = "Home"
                 st.experimental_rerun()
-        with col5:
             if st.button("Login"):
                 st.session_state.current_page = "Login"
                 st.experimental_rerun()
-        with col6:
             if st.button("Signup"):
                 st.session_state.current_page = "Signup"
                 st.experimental_rerun()
-    else:
-        with col2:
+        else:
             if st.button("Vehicle Form"):
                 st.session_state.current_page = "vehicle_form"
                 st.experimental_rerun()
-        with col3:
             if st.button("Predictions"):
                 st.session_state.current_page = "predictions"
                 st.experimental_rerun()
-        with col4:
             if st.button("Analysis"):
                 st.session_state.current_page = "llm_analysis"
                 st.experimental_rerun()
-        with col6:
             if st.button("Update"):
                 st.session_state.current_page = "update"
                 st.experimental_rerun()
-        with col5:
             if st.button("Logout"):
                 st.session_state.authenticated = False
                 st.session_state.user = None
@@ -168,9 +177,8 @@ def render_top_navigation():
 
 def main():
     """Renders the selected page based on authentication status."""
-    render_top_navigation()
-    st.markdown("<div class='content'>", unsafe_allow_html=True)
-    st.markdown("<h1 class='title'>Vehicle Predictive Analysis Platform</h1>", unsafe_allow_html=True)
+    render_sidebar_navigation()
+    
 
     if st.session_state.current_page == 'Home':
         show_home_page()
